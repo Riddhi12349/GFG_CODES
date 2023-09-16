@@ -7,45 +7,36 @@ class Solution
 {
 	public:
 	//Function to return list containing vertices in Topological order. 
+	
+	void dfs_rec(int src , stack<int>& st, vector<int>& vis , vector<int> adj[]){
+	    
+	    vis[src] = 1;
+	    for(auto x : adj[src]){
+	        if(!vis[x])
+	        dfs_rec(x, st , vis , adj);
+	    }
+	    
+	    st.push(src);
+	}
 	vector<int> topoSort(int v, vector<int> adj[]) 
 	{
-	       vector<int> ans;
-	       queue<int> q;
-	       
-	       vector<int> indegree(v , 0);
-	       
-	       // WILL FIND THE INDEGREE OF EACH VERTEX
-	  
-	      for(int i = 0 ; i < v ; i++){
-	         for(auto x : adj[i]){
-	            indegree[x]++;    
-	         }
-	      }
-	      
-	      // PUSH ALL THE VERTICES INSIDE THE QUEUE,
-	      //HAVING INDEG = 0
-	      
-	      for(int i = 0 ; i < v ; i++){
-	          if(indegree[i] == 0){
-	              q.push(i);
-	          }
-	      }
-	      
-	      while(!q.empty()){
-	          
-	          int u = q.front();
-	          q.pop();
-	          ans.push_back(u);
-	          
-	          for(auto x : adj[u]){
-	              indegree[x]--;
-	              if(indegree[x] == 0)
-	                q.push(x);
-	          }
-	      }
-	      
-	      return ans;
-	       
+	    // using stack and applying DFS
+	    stack<int> st;
+	    vector<int> vis(v , 0);
+	    
+	    for(int  i = 0 ; i < v ; i++){
+	        if(!vis[i]){
+	            dfs_rec(i , st , vis , adj);
+	        }
+	    }
+	    
+	    vector<int> ans;
+	    while(!st.empty()){
+	        ans.push_back(st.top());
+	        st.pop();
+	    }
+	    
+	    return ans;
 	}
 };
 
