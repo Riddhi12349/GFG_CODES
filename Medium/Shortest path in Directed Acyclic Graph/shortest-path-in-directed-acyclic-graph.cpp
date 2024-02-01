@@ -6,45 +6,55 @@ using namespace std;
 
 // } Driver Code Ends
 // User function Template for C++
-/*
 class Solution {
   public:
-     vector<int> shortestPath(int N,int M, vector<vector<int>>& edges){
-        // code here
-    }
-};
-*/
-// User function Template for C++
-class Solution {
-  public:
-     vector<int> shortestPath(int n,int M, vector<vector<int>>& edges){
-        vector<vector<pair<int,int>>>graph(n+1);
-        for(auto it: edges){
-            graph[it[0]].push_back({it[1],it[2]});
-            //graph[it[1]].push_back({it[0],it[2]});
+     void dfs(int src, vector<int>& vis , vector<pair<int,int>> adj[] , stack<int>& st){
+         
+         vis[src] = 1;
+         
+         for(auto it : adj[src]){
+             if(!vis[it.first]){
+                 dfs(it.first , vis, adj , st);
+             }
+         }
+         st.push(src);
+     }
+     vector<int> shortestPath(int n,int m, vector<vector<int>>& edges){
+           
+      
+           vector<pair<int,int>> adj[n];
+           
+           // 1.create adj list--
+           for(int i = 0 ; i < m ; i++){
+               adj[edges[i][0]].push_back({edges[i][1] , edges[i][2]});
+           }
+           
+           vector<int> vis(n,0); stack<int> st;
+        //   for(int i = 0 ; i < n ; i++){
+        //       if(!vis[i]){ 
+               dfs(0,vis,adj,st);
+        //       }
+        //   }
+        
+           
+           vector<int> dist(n,INT_MAX);
+           dist[0] = 0;
+           
+           while(!st.empty()){
+               int f = st.top(); st.pop(); 
+               for(auto it : adj[f]){
+                   dist[it.first] = min(dist[it.first] , dist[f] + it.second);
+               }
+           }
+           
+           for(int i = 0; i < n ; i++){
+               if(dist[i] == INT_MAX) dist[i] = -1;
+           }
+           
+           return dist;
         }
-        set<pair<int,int>>s1;
-        s1.insert({0,0});
-        vector<int>vis(n+1,0);
-        vector<int>res(n, -1);
-        while(!s1.empty()){
-            auto it = *s1.begin();
-            s1.erase(s1.find(it));
-            if(vis[it.second] == 1){
-                continue;
-            }
-            vis[it.second]=1;
-            res[it.second] = it.first;
-            for(auto it1: graph[it.second]){
-                if(!vis[it1.first]){
-                    s1.insert({it.first + it1.second, it1.first});
-                }
-            }
-        }
-        return res;
-        // code here
-    }
 };
+
 
 //{ Driver Code Starts.
 int main() {
