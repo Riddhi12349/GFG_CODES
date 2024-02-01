@@ -10,35 +10,42 @@ using namespace std;
 
 class Solution {
   public:
-    bool dfs(int src, vector<int> adj[], 
-    vector<int>& vis,vector<int>& path_vis,vector<int>& ans){
-        
-        vis[src]=1; path_vis[src]=1;
-        
-        for(auto it: adj[src]){
-            if(!vis[it]){
-               if(dfs(it,adj,vis,path_vis,ans))
-                       return true;
-            }
-            else if(vis[it]==1 && path_vis[it]==1){
-                return true;
-            }
-        }
-        
-        path_vis[src]=0;
-        ans.push_back(src);
-        return false;
-    }
     vector<int> eventualSafeNodes(int v, vector<int> adj[]) {
-        // code here
-        vector<int> ans, vis(v,0) , path_vis(v,0);
         
-        for(int i=0 ; i<v ; i++){
-            if(!vis[i]){
-                dfs(i,adj,vis,path_vis,ans);
+        vector<int> ans;
+        //for using topo-sort and detecting cycle-nodes, we will reverse the edges
+        
+        vector<int> adj1[v]; vector<int> indeg(v,0);
+        
+        for(int i=0 ; i < v ; i++){
+            for(auto it : adj[i]){
+                adj1[it].push_back(i);
             }
         }
-        sort(ans.begin(),ans.end());
+        
+        for(int i = 0 ; i < v ; i++){
+            for(auto it : adj1[i])
+                indeg[it]++;
+        }
+        
+        queue<int> q;
+        
+        for(int i = 0 ; i < v ; i++){
+            if(indeg[i] == 0) q.push(i);
+        }
+        
+        //vector<int> ans;
+        
+        while(!q.empty()){
+            int f = q.front(); q.pop();
+            ans.push_back(f);
+            for(auto it : adj1[f]) {
+                indeg[it]--;
+                if(indeg[it]==0) q.push(it);
+            }
+        }
+        
+        sort(ans.begin() , ans.end());
         return ans;
     }
 };
