@@ -3,39 +3,103 @@
 using namespace std;
 
 // } Driver Code Ends
+
+class DisjointSets{
+  public:
+   vector<int> rank , size , parent;
+  
+    DisjointSets(int v){
+      rank.resize(v+1,0);
+      size.resize(v+1);
+      parent.resize(v+1);
+      for(int i = 0 ; i <= v ; i++){
+          parent[i] = i;
+          size[i]=1;
+    }
+    }
+    
+    int findUParent(int node){
+       
+        if(parent[node] == node)
+             return node;
+       
+       return parent[node] = findUParent(parent[node]);
+    }
+    
+    void UnionByRank(int u , int v){
+        
+        int ulp_u = findUParent(u);
+        int ulp_v = findUParent(v);
+        
+        if(ulp_u == ulp_v) return;
+        
+        if(rank[ulp_u] < rank[ulp_v]){
+            parent[ulp_u] = ulp_v;
+        }
+        
+        else if(rank[ulp_u] > ulp_v){
+            parent[ulp_v] = ulp_u;
+        }
+        
+        else{
+            parent[ulp_u] = ulp_v;
+            rank[ulp_v] += 1;
+        }
+        
+    }
+    
+    void UnionBySize(int u , int v){
+          
+          int ulp_u = findUParent(u);
+          int ulp_v = findUParent(v);
+          
+          if(ulp_u == ulp_v) return;
+          
+          if(size[ulp_u] >= size[ulp_v]){
+              parent[ulp_v] = ulp_u;
+              size[ulp_u] += size[ulp_v];
+          }
+          else{
+              parent[ulp_u] = ulp_v;
+              size[ulp_v] += size[ulp_u];
+          }
+    }
+};
+
 class Solution
 {
 	public:
 	//Function to find sum of weights of edges of the Minimum Spanning Tree.
-    using t = vector<int>;
     int spanningTree(int v, vector<vector<int>> adj[])
     {
+     //USING KRUSKAL ALGORITHM
+      vector<vector<int>> edges;
+      for(int i = 0 ; i < v ; i++){
+          for(auto it : adj[i]){
+              edges.push_back({it[1],i,it[0]}); //{weight,node,adj}
+          }
+      }
       
-       vector<int> vis(v,0);
-       priority_queue<t,vector<t>,greater<t>> min_pq;
-       int sum = 0;
-       
-       min_pq.push({0,0,-1});// {WT,NODE,PARENT}
-       
-       while(!min_pq.empty()){
-           
-           auto it = min_pq.top();
-           min_pq.pop();
-       
-           int wt = it[0] , node = it[1] , parent = it[2];
-           
-           if(vis[node]==1) continue;
-           vis[node] = 1; sum += wt;
-           
-           for(auto itr : adj[node]){
-               int adj_node = itr[0] , edw = itr[1];
-               if(!vis[adj_node]){
-                   min_pq.push({edw,adj_node,node});
-               }
-           }
-       }
-       
-       return sum;
+      sort(edges.begin() , edges.end());
+      
+      DisjointSets obj(v);
+      int mst_wt = 0;
+      
+      for(auto it : edges){
+          int wt = it[0];
+          int node = it[1];
+          int adj = it[2];
+          
+          if(obj.findUParent(node)==obj.findUParent(adj)){
+              continue;
+          }
+          else{
+             mst_wt += wt; 
+             obj.UnionBySize(node , adj);
+          }
+      }
+      
+      return mst_wt;
     }
 };
 
