@@ -6,7 +6,7 @@ using namespace std;
 class Solution{
 	public:
 	const int mod = 1e9+7;
-	
+/*	
 	int find(int i , int sum , int a[] , int n, vector<vector<int>>& dp){
 	   
 	    if(i >= n){ return sum==0;}
@@ -21,10 +21,31 @@ class Solution{
 	    
 	    return dp[i][sum] = (pick+notpick)%mod;
 	}
+*/
 	int perfectSum(int a[], int n, int sum)
 	{
-	    vector<vector<int>> dp(n+1 , vector<int>(sum+1 , -1));
-       return find(0 , sum , a , n , dp);
+	    vector<vector<int>> dp(n+2 , vector<int>(sum+2 , 0));
+       //return find(0 , sum , a , n , dp);
+    //   dp[n][0]=1; 
+    //   /
+    for(int i = 0 ; i <= n  ; i++)
+      dp[i][0] = 1;
+      
+       for(int i = 1 ; i <= n ; i++){
+           for(int j = 0 ;  j <= sum ; j++){
+                
+               
+                int p = 0;
+                if(j-a[i-1] >= 0)
+                    p = dp[i-1][j-a[i-1]];
+                
+                int np = dp[i-1][j];
+                
+                dp[i][j] = (p+np)%mod;
+           }
+       }
+       
+       return dp[n][sum];
 	}
 	  
 };
