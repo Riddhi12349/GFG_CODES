@@ -31,21 +31,21 @@ class Solution{
     for(int i = 0 ; i <= n  ; i++)
       dp[i][0] = 1;
       
-       for(int i = 1 ; i <= n ; i++){
+       for(int i = n-1 ; i >= 0 ; i--){
            for(int j = 0 ;  j <= sum ; j++){
                 
                
                 int p = 0;
-                if(j-a[i-1] >= 0)
-                    p = dp[i-1][j-a[i-1]];
+                if(j-a[i] >= 0)
+                    p = dp[i+1][j-a[i]];
                 
-                int np = dp[i-1][j];
+                int np = dp[i+1][j];
                 
                 dp[i][j] = (p+np)%mod;
            }
        }
        
-       return dp[n][sum];
+       return dp[0][sum];
 	}
 	  
 };
